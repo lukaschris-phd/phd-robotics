@@ -19,7 +19,7 @@ print("Missing battery     :", df_clean["battery"].isna().sum())
 print("\n")
 print("Invalid temperature :", df_clean[(df_clean["temperature"] < -20) | (df_clean["temperature"] > 60)].shape[0])
 print("Invalid humidity    :", df_clean[(df_clean["humidity"] < 0) | (df_clean["humidity"] > 100)].shape[0])
-print("Invalid distance    :", df_clean[(df_clean["distance"] >= 0)].shape[0])
+print("Invalid distance    :", df_clean[(df_clean["distance"] < 0)].shape[0])
 print("Invalid battery     :", df_clean[(df_clean["battery"] < 0) | (df_clean["battery"] > 15)].shape[0])
 
 # Handling temporary temperature missing values by filling them with the median of the respective columns
@@ -60,7 +60,7 @@ df_clean["low_battery"] = df_clean["battery"] < 11
 print("\nData with Low Battery Column:")
 print(df_clean)
 
-df_clean["tempe_status"] = np.where(
+df_clean["temperature_status"] = np.where(
     df_clean["temperature"] >= 28,
     "HOT",
     "NORMAL"
@@ -69,14 +69,16 @@ print(df_clean)
 
 # Sensor analysis
 print("\nSensor Analysis")
-print("Average temperature : ", np.mean(df_clean["temperature"]))
-print("Average humidity    : ", np.mean(df_clean["humidity"]))
-print("Average distance    : ", np.mean(df_clean["distance"]))
-print("Minimum distance    : ", np.min(df_clean["distance"]))
-print("Maximum temperature : ", np.max(df_clean["temperature"]))
+print("Average temperature : ", df_clean["temperature"].mean())
+print("Average humidity    : ", df_clean["humidity"].mean())
+print("Average distance    : ", df_clean["distance"].mean())
+print("Minimum distance    : ", df_clean["distance"].min())
+print("Maximum temperature : ", df_clean["temperature"].max())
 print("\n")
-print("Obstale detected     :", df_clean["obstacle"].sum())
+print("Obstacle detected     :", df_clean["obstacle"].sum())
 print("Low battery readings :", df_clean["low_battery"].sum())
+print("\nMissing Values:")
+print(df_clean.isna().sum())
 
 df_clean.to_csv(
     "data/sample/clean_iot_sensor.csv",
