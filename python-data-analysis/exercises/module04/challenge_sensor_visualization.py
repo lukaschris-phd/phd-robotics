@@ -18,6 +18,8 @@ fig1, axes1 = plt.subplots(
     # berbagi sumbu x yang sama
 )
 
+fig1.suptitle("Robot Environment Monitor")
+
 axes1[0].plot(
     df["timestamp"],
     df["temperature"],
@@ -51,9 +53,8 @@ axes2.scatter(
     label="Obstacle"
 )
 axes2.set_title("Obstacle Detection")
-axes2.legend()
 axes2.set_xlabel("Time (s)")
-axes2.set_ylabel("Distance (m)")
+axes2.set_ylabel("Distance (cm)")
 axes2.grid(True)
 
 threshold = 50
@@ -64,6 +65,7 @@ axes2.axhline(
     label="Obstacle Threshold"
 )
 
+axes2.legend()
 # Counting the number of times the distance is below the threshold
 count = (df["distance"] < threshold).sum()
 
@@ -73,7 +75,7 @@ x_f2 = first_point1["timestamp"]
 y_f2 = first_point1["distance"]
 
 axes2.annotate(
-    f"First crossing at {x_f2:.2f}s, {y_f2:.2f}m",
+    f"First crossing at {x_f2:.2f}s, {y_f2:.2f}cm",
     xy=(x_f2, y_f2),
     xytext=(x_f2 + 1, y_f2 + 1),
     arrowprops=dict(arrowstyle='->', color='red'),
@@ -147,27 +149,27 @@ print("Temperature-Humidity Correlation :", correlation)
 # between temperature and humidity, suggesting that as the temperature increases, 
 # the humidity tends to increase as well.
 
+fig1.tight_layout()
 fig1.savefig(
     "figures/environment_monitor.png",
     dpi=300
 )
-
+fig2.tight_layout()
 fig2.savefig(
     "figures/obstacle_detection.png",
     dpi=300
 )
-
+fig3.tight_layout()
 fig3.savefig(
     "figures/battery_monitor.png",
     dpi=300
 )
-
+fig4.tight_layout()
 fig4.savefig(
     "figures/temperature_humidity.png",
     dpi=300
 )
 
-plt.tight_layout()
 plt.show()
 
 # =====================================================
@@ -175,12 +177,12 @@ plt.show()
 # =====================================================
 #
 # 1. Temperature:
-# Temperature tends to fluctuate within a normal range and averagely increasing, 
-# indicating that the robot's temperature sensor is functioning properly.
+# Temperature generally increases over the observed
+# time period, with several local fluctuations.
 #
 # 2. Humidity:
-# Humidity tends to increase as the temperature increases, 
-# which is expected in many environments.
+# Humidity generally increases during the observed
+# period, although several fluctuations are present.
 #
 # 3. Obstacle:
 # There are 5 instances where the distance readings fall below the 50 cm threshold.
@@ -190,10 +192,11 @@ plt.show()
 # indicating low battery conditions.
 #
 # 5. Temperature-Humidity relationship:
-# There are positive correlation between temperature and humidity, 
-# which means that as the temperature increases, the humidity tends to increase as well. 
-# This relationship can be important for understanding environmental conditions 
-# and their impact on the robot's performance.
+# In this dataset, temperature and humidity show
+# a strong positive correlation (r ≈ 0.91).
+# This association does not establish causation.
+# The strong positive correlation 
+# does not imply that increasing temperature causes humidity to increase.
 #
 # Limitations:
 # Data is limited to a specific time frame and may not represent long-term trends.
