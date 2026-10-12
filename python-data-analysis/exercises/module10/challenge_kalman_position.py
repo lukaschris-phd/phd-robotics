@@ -6,6 +6,8 @@ rng = np.random.default_rng(42)
 
 time = np.arange(0, 10.0, 0.1)
 kalman_estimates = []
+variances = []
+gains = []
 
 true_position = 1.5 * time
 
@@ -46,23 +48,28 @@ dt = 0.1
 
 # For each time step, we will perform 
 # the predict and update steps of the Kalman filter.
-for z in measurements:
-    # PREDICT
-    x_prior = x + velocity * dt
-    P_prior = P + Q
+for i, z in enumerate(measurements):
+    if i == 0:
+        x_prior = x
+        P_prior = P
+    else:
+        x_prior = x + velocity * dt
+        P_prior = P + Q
 
     # UPDATE
     K = P_prior / (P_prior + R)
 
     x = x_prior + K * (z - x_prior)
     P = (1 - K) * P_prior
-    kalman_estimates.append(float(np.asarray(x).item()))
+    kalman_estimates.append(x)
+    variances.append(P)
+    gains.append(K)
     print(f"Measurement: {z:.2f}, Estimate: {x:.2f}, Variance: {P:.2f}, Kalman Gain: {K:.2f}")  
 
 # Error and RMSE
-measurement_errors = z - true_position
+measurement_errors = measurements - true_position
 measurement_rmse = np.sqrt(np.mean(measurement_errors**2))
-kalman_errors = x - true_position
+kalman_errors = np.array(kalman_estimates) - true_position
 kalman_rmse = np.sqrt(np.mean(kalman_errors**2))
 print(f"Measurement RMSE   : {measurement_rmse:.2f} m")
 print(f"Kalman Filter RMSE : {kalman_rmse:.2f} m")
@@ -101,14 +108,14 @@ plt.show()
 # Kalman Diagnostics Figure
 plt.figure(figsize=(10, 5))
 plt.subplot(2, 1, 1)
-plt.plot(time, [P] * len(time), label="Variance (P)", color="blue")
+plt.plot(time, variances, label="Variance (P)", color="blue")
 plt.xlabel("Time (s)")
 plt.ylabel("Variance (m²)")
 plt.title("Kalman Filter Diagnostics")
 plt.legend()
 plt.grid()
 plt.subplot(2, 1, 2)
-plt.plot(time, [K] * len(time), label="Kalman Gain (K)", color="green")
+plt.plot(time, gains, label="Kalman Gain (K)", color="green")
 plt.xlabel("Time (s)")
 plt.ylabel("Kalman Gain")
 plt.legend()
